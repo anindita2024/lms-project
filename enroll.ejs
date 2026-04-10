@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Enroll - <%= course.courseName %></title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/nav') %>
+    <div class="container">
+        <div class="auth-form-container" style="text-align: center; border-top: 5px solid var(--primary-orange);">
+            <div class="course-badge">Premium Course</div>
+            <h1 style="margin-top: 15px;"><%= course.courseName %></h1>
+            <p>Instructor: <strong><%= course.instructor %></strong></p>
+
+            <div style="background: var(--bg-color); padding: 30px; border-radius: 15px; margin: 25px 0;">
+                <p style="color: var(--text-muted); margin-bottom: 5px;">One-time Enrollment Fee</p>
+                <h2 style="font-size: 3rem; color: var(--primary-orange);">$<%= course.price %></h2>
+            </div>
+
+            <form action="/enroll/pay/<%= course._id %>" method="POST">
+                <button type="submit" class="view-btn" style="width: 100%; background: #27ae60; font-size: 1.1rem;">
+                    Confirm & Pay Now
+                </button>
+            </form>
+
+            <a href="/dashboard" style="display: block; margin-top: 20px; color: var(--text-muted); text-decoration: none;">
+                ← Back to Dashboard
+            </a>
+        </div>
+    </div>
+</body>
+</html>

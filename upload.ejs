@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LMS | Admin Content Manager</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <%- include('partials/nav') %>
+
+        <div class="container">
+            <header class="hero">
+                <h1>Admin Content Manager</h1>
+                <p>Create new courses or upload lectures, notes, and books for your students.</p>
+            </header>
+
+            <div class="auth-form-container" style="max-width: 600px; margin: 0 auto;">
+
+                <div class="form-group">
+                    <label style="font-weight: bold;">I want to:</label>
+                    <select id="uploadType" onchange="toggleMode()" class="form-input"
+                        style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
+                        <option value="content">Upload Content to Existing Course</option>
+                        <option value="new">Create a Brand New Course</option>
+                    </select>
+                </div>
+
+                <hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--border);">
+
+                <form action="/upload" method="POST" enctype="multipart/form-data">
+
+                    <div id="newCourseSection" style="display: none;">
+                        <h3 style="margin-bottom: 15px; color: var(--primary-orange);">Course Details</h3>
+                        <div class="form-group">
+                            <label>New Course Name</label>
+                            <input type="text" name="newCourseName" placeholder="e.g., Fullstack Web Dev"
+                                class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Instructor Name</label>
+                            <input type="text" name="newInstructor" placeholder="e.g., Angela Yu" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Price ($)</label>
+                            <input type="number" name="newPrice" placeholder="29.99" step="0.01" class="form-input">
+                        </div>
+                    </div>
+
+                    <div id="existingCourseSection">
+                        <div class="form-group">
+                            <label style="font-weight: bold;">Select Course</label>
+                            <select name="courseId" id="courseSelect" class="form-input"
+                                style="width: 100%; padding: 8px;">
+                                <option value="" disabled selected>-- Choose a Course --</option>
+                                <% if (courses && courses.length> 0) { %>
+                                    <% courses.forEach(course=> { %>
+                                        <option value="<%= course._id %>">
+                                            <%= course.courseName %>
+                                        </option>
+                                        <% }) %>
+                                            <% } else { %>
+                                                <option value="" disabled>No courses available.</option>
+                                                <% } %>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="resourceSection">
+                        <h3 style="margin-top: 25px; margin-bottom: 15px; color: var(--primary-orange);">Resource
+                            Details (Optional for New Courses)</h3>
+
+                        <div class="form-group">
+                            <label>Resource Title</label>
+                            <input type="text" name="title" id="resTitle" placeholder="e.g., Lesson 1"
+                                class="form-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Resource Type</label>
+                            <select name="fileType" class="form-input" style="width: 100%; padding: 8px;">
+                                <option value="lecture">Lecture (Video)</option>
+                                <option value="note">Notes (PDF)</option>
+                                <option value="book">Book (Digital)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Select File</label>
+                            <input type="file" name="resourceFile" id="resFile" style="width: 100%;">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="upload-btn" style="width: 100%; margin-top: 20px;">
+                        PUBLISH TO LMS
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            function toggleMode() {
+                const type = document.getElementById('uploadType').value;
+                const newSection = document.getElementById('newCourseSection');
+                const existingSection = document.getElementById('existingCourseSection');
+
+                // Elements to toggle required status
+                const resTitle = document.getElementById('resTitle');
+                const resFile = document.getElementById('resFile');
+                const courseSelect = document.getElementById('courseSelect');
+                const newCourseInput = document.getElementsByName('newCourseName')[0];
+                const newInstructorInput = document.getElementsByName('newInstructor')[0];
+
+                if (type === 'new') {
+                    newSection.style.display = 'block';
+                    existingSection.style.display = 'none';
+
+                    // Course info is required, Resource is optional
+                    newCourseInput.required = true;
+                    newInstructorInput.required = true;
+                    courseSelect.required = false;
+                    resTitle.required = false;
+                    resFile.required = false;
+                } else {
+                    newSection.style.display = 'none';
+                    existingSection.style.display = 'block';
+
+                    // Course selection and Resource are both required
+                    newCourseInput.required = false;
+                    newInstructorInput.required = false;
+                    courseSelect.required = true;
+                    resTitle.required = true;
+                    resFile.required = true;
+                }
+            }
+
+            // Run once on load to set initial state correctly
+            window.onload = toggleMode;
+        </script>
+</body>
+
+</html>

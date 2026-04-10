@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library - Notes & Books</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+    <%- include('partials/nav') %>
+
+    <div class="container">
+        <% if (typeof viewMode !== 'undefined' && viewMode === 'player') { %>
+            <header class="dashboard-header">
+                <a href="/dashboard" style="text-decoration: none; color: var(--primary-orange); font-weight: bold; display: block; margin-bottom: 10px;">
+                    &larr; Back to Dashboard
+                </a>
+                <h1>Course Content</h1>
+                <p>Focused Learning: Videos and Study Notes</p>
+            </header>
+        <% } else { %>
+            <header class="library-header" style="text-align: center; padding: 2rem 0;">
+                <h1>Digital Library</h1>
+                <p>Access all textbooks, notes, and curated resources.</p>
+            </header>
+        <% } %>
+
+        <section class="library-content">
+            <% if (typeof viewMode !== 'undefined' && viewMode === 'player') { %>
+                <div class="courses-flex-container">
+                    <% 
+                        const learningResources = resources.filter(r => 
+                            r.fileType && 
+                            !r.fileType.toLowerCase().includes('book') && 
+                            !r.fileType.toLowerCase().includes('pdf')
+                        ); 
+                    %>
+
+                    <% if (learningResources.length > 0) { %>
+                        <% learningResources.forEach(resource => { %>
+                            <div class="library-category">
+                                <div class="card-content">
+                                    <h3><%= resource.title %></h3>
+                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">
+                                        Type: <%= resource.fileType %>
+                                    </p>
+                                    
+                                    <% if (resource.fileType.toLowerCase().includes('lecture') || resource.fileType.toLowerCase().includes('video')) { %>
+                                        <video controls style="width:100%; border-radius:8px; background:#000;">
+                                            <source src="<%= resource.filePath %>" type="video/mp4">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    <% } else { %>
+                                        <div class="notes-placeholder" style="height:180px; display:flex; align-items:center; justify-content:center; background:#f0f2f5; border-radius:8px; font-size:3rem; margin:10px 0;">
+                                            📝
+                                        </div>
+                                    <% } %>
+                                </div>
+                                
+                                <a href="<%= resource.filePath %>" class="download-link" style="margin-top:auto; display: block;" target="_blank">
+                                    Open
+                                </a>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <p style="text-align: center; width: 100%;">No videos or notes found for this course.</p>
+                    <% } %>
+                </div>
+
+            <% } else { %>
+                <% if (typeof courses !== 'undefined' && courses.length > 0) { %>
+                    <div class="courses-flex-container">
+                        <% courses.forEach(course => { %>
+                            <div class="library-category">
+                                <h2 style="margin-bottom: 20px;"><%= course.courseName %></h2>
+                                
+                                <div class="book-grid">
+                                    <% 
+                                        const documentResources = resources.filter(r => {
+                                            const resCourseId = r.courseId ? r.courseId.toString() : 
+                                                               (r.course && r.course._id ? r.course._id.toString() : 
+                                                               (r.course ? r.course.toString() : ""));
+                                            
+                                            const targetCourseId = course._id.toString();
+                                            const type = (r.fileType || "").toLowerCase();
+
+                                            return resCourseId === targetCourseId && 
+                                                   (type.includes('book') || type.includes('note') || type.includes('pdf') || type.includes('resource'));
+                                        }); 
+                                    %>
+
+                                    <% if (documentResources.length > 0) { %>
+                                        <% documentResources.forEach(item => { %>
+                                            <div class="book-card-mini">
+                                                <span class="icon">
+                                                    <%= (item.fileType && item.fileType.toLowerCase().includes('book')) ? '📚' : '📝' %>
+                                                </span>
+                                                <div class="mini-info">
+                                                    <h4><%= item.title %></h4>
+                                                    
+                                                    <div class="mini-actions">
+                                                        <a href="<%= item.filePath %>" download class="mini-btn download-btn-green">Download</a>
+                                                        <button onclick="deleteResource('<%= item._id %>')" class="mini-btn delete-btn-mixed">Delete</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <% }) %>
+                                    <% } else { %>
+                                        <p style="font-size: 0.85rem; color: var(--text-muted); padding: 10px;">
+                                            No documents linked to this course.
+                                        </p>
+                                    <% } %>
+                                </div>
+                            </div>
+                        <% }) %>
+                    </div>
+                <% } else { %>
+                    <p style="text-align: center; margin-top: 50px;">No courses found.</p>
+                <% } %>
+            <% } %>
+        </section>
+    </div>
+
+    <script>
+        async function deleteResource(id) {
+            if (confirm('Are you sure you want to delete this resource?')) {
+                try {
+                    const response = await fetch(`/library/delete/${id}`, { method: 'DELETE' });
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        alert('Failed to delete resource');
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>

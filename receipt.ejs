@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Receipt - <%= courseName %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* Reset and Center */
+        body {
+            background-color: #f4f7f6;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .receipt-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* The Main Card */
+        .receipt-card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            border-top: 10px solid #27ae60;
+        }
+
+        /* Success Icon/Header */
+        .receipt-header h2 {
+            color: #27ae60;
+            margin: 10px 0;
+            font-size: 2rem;
+        }
+
+        .receipt-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        /* Receipt Info Rows */
+        .receipt-body {
+            text-align: left;
+            margin: 30px 0;
+            padding: 20px 0;
+            border-top: 1px dashed #ddd;
+            border-bottom: 1px dashed #ddd;
+        }
+
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+
+        .receipt-row strong {
+            color: #444;
+        }
+
+        .receipt-row span {
+            color: #222;
+            font-weight: 500;
+        }
+
+        .total-row {
+            margin-top: 15px;
+            font-size: 1.3rem;
+            color: #ff4500; /* Your orange brand color */
+            font-weight: bold;
+        }
+
+        /* Action Buttons */
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .receipt-btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+            text-align: center;
+        }
+
+        .download-btn {
+            background: #2d3436;
+            color: white !important;
+        }
+
+        .start-btn {
+            background: #27ae60;
+            color: white !important;
+        }
+
+        .receipt-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* Back to Home small link */
+        .back-home {
+            display: inline-block;
+            margin-top: 20px;
+            color: #999;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        /* PRINT LOGIC: This ensures only the card prints */
+        @media print {
+            body { background: white; }
+            .btn-container, .back-home { display: none !important; }
+            .receipt-wrapper { padding: 0; min-height: auto; }
+            .receipt-card { 
+                box-shadow: none; 
+                border: 1px solid #eee; 
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="receipt-wrapper">
+        <div class="receipt-card">
+            <div class="receipt-header">
+                <div style="font-size: 3rem;">✅</div>
+                <h2>Payment Successful</h2>
+                <p>Your enrollment is now active.</p>
+            </div>
+
+            <div class="receipt-body">
+                <div class="receipt-row">
+                    <strong>Receipt ID:</strong> <span><%= receiptId %></span>
+                </div>
+                <div class="receipt-row">
+                    <strong>Date:</strong> <span><%= date %></span>
+                </div>
+                <div class="receipt-row">
+                    <strong>Student:</strong> <span><%= userName %></span>
+                </div>
+                <div class="receipt-row">
+                    <strong>Course:</strong> <span><%= courseName %></span>
+                </div>
+                <div class="receipt-row total-row">
+                    <strong>Total Paid:</strong> <span>$<%= amount %></span>
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button onclick="window.print()" class="receipt-btn download-btn">
+                    Download PDF
+                </button>
+                <a href="/dashboard/course/<%= courseId %>" class="receipt-btn start-btn">
+                    Start Learning
+                </a>
+            </div>
+
+            <a href="/dashboard" class="back-home">← Back to Dashboard</a>
+        </div>
+    </div>
+
+</body>
+</html>

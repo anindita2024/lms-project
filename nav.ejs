@@ -1,0 +1,28 @@
+<nav class="main-nav">
+    <div class="nav-left">
+        <a href="/" class="nav-logo">
+            <img src="/images/logo.jpg" alt="LMS Logo">
+        </a>
+        <a href="/" class="nav-link">Home</a>
+        <a href="/dashboard" class="nav-link">Dashboard</a>
+        <a href="/library" class="nav-link">Library</a>
+    </div>
+
+    <div class="nav-right">
+        <% if (locals.user) { %>
+
+            <% if (user.role==='admin' ) { %>
+                <a href="/upload" class="upload-btn">Upload Content</a>
+                <% } %>
+
+                    <span class="user-name">Hi, <%= user.username %></span>
+                    <a href="/logout" class="nav-link">Logout</a>
+
+                    <% } else { %>
+                        <a href="/login" class="nav-link">Login</a>
+                        <a href="/register" class="view-btn">Join Now</a>
+                        <% } %>
+
+                            <button id="theme-toggle" class="mode-btn">🌙</button>
+    </div>
+</nav>

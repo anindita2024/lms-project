@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Courses</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <%- include('partials/nav') %>
+
+    <div class="container">
+        <header class="dashboard-header">
+            <h1>My Learning Dashboard</h1>
+            <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
+                <div class="admin-panel">
+                    <a href="/upload" class="upload-btn">+ Add New Course</a>
+                </div>
+            <% } %>
+        </header>
+
+        <section class="course-grid">
+            <% if (courses && courses.length > 0) { %>
+                <% courses.forEach(course => { %>
+                    <div class="course-card">
+                        
+                        <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
+                            <form action="/delete-course/<%= course._id %>" method="POST" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
+                                <button type="submit" class="delete-btn" onclick="return confirm('Delete course?')">&times;</button>
+                            </form>
+                        <% } %>
+
+                        <div class="course-badge">Course</div>
+                        <h3><%= course.courseName %></h3>
+                        <p class="instructor">Instructor: <strong><%= course.instructor %></strong></p>
+
+                        <div class="course-meta">
+                            <span class="students-count">👥 <%= course.enrolledStudents || 0 %> Students</span>
+                            <span class="course-price"><%= (course.price > 0) ? '$' + course.price : 'FREE' %></span>
+                        </div>
+
+                        <% 
+                            // SAFE CHECK: Check if user exists and if enrolled
+                            let isEnrolled = false;
+                            const isFree = (course.price == 0 || course.price == "0");
+                            
+                            if (typeof currentUser !== 'undefined' && currentUser && currentUser.enrolledCourses) {
+                                isEnrolled = currentUser.enrolledCourses.some(id => id.toString() === course._id.toString());
+                            }
+                        %>
+
+                        <% if (isFree || isEnrolled) { %>
+                            <a href="/dashboard/course/<%= course._id %>" class="view-btn green-btn">
+                                Continue Learning
+                            </a>
+                        <% } else { %>
+                            <a href="/dashboard/course/<%= course._id %>" class="view-btn" style="background: var(--primary-orange);">
+                                Enroll Now - $<%= course.price %>
+                            </a>
+                        <% } %>
+
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="no-courses" style="grid-column: 1 / -1; text-align: center; padding: 50px;">
+                    <p>No courses available right now.</p>
+                </div>
+            <% } %>
+        </section>
+    </div>
+</body>
+</html>
